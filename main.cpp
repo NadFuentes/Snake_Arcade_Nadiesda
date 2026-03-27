@@ -25,12 +25,12 @@ int main()
         ));
     ventana.setFramerateLimit(60);
 
-    // ---- Fuente ----
+    // Fuente
     sf::Font fuente;
     bool fuenteOk = fuente.loadFromFile("C:/Windows/Fonts/arial.ttf");
     if (!fuenteOk) fuente.loadFromFile("C:/Windows/Fonts/calibri.ttf");
 
-    // ---- Musica ----
+    // Musica
     // sf::Music hace streaming directo — no carga el archivo completo en RAM
     sf::Music musicaPantallas;
     sf::Music musicaJuego;
@@ -65,7 +65,7 @@ int main()
         if (ui.getPantalla() == Pantalla::SALIR)
             ventana.close();
 
-        // ---- Cambio de musica segun pantalla ----
+        // Cambio de musica segun pantalla
         bool ahoraEnJuego = (ui.getPantalla() == Pantalla::JUEGO);
         if (ahoraEnJuego && !enJuego) {
             if (hayMusicaPantallas) musicaPantallas.stop();
@@ -77,7 +77,7 @@ int main()
             enJuego = false;
         }
 
-        // ---- Lanzar partida ----
+        // Lanzar partida
         if (ui.getPantalla() == Pantalla::JUEGO) {
             Jugador   jug  = ui.getJugadorActivo();
             Nivel     niv  = ui.getNivelSeleccionado();

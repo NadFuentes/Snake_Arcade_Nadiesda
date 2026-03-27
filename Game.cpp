@@ -75,6 +75,7 @@ void Game::inicializar()
     estado      = EstadoJuego::JUGANDO;
     puntaje     = 0;
     cerezasComidas = 0;
+
     // cerezasTotalesCompetitivo no se resetea aqui — se acumula entre niveles
 
     timerMovimiento = 0.f;

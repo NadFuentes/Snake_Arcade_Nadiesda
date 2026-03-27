@@ -191,6 +191,7 @@ void UIManager::procesarEventos(sf::Event& e)
     case Pantalla::SELECCION_MODO:  eventSelModo(e);  break;
     case Pantalla::SELECCION_NIVEL: eventSelNivel(e); break;
     case Pantalla::RANKING:         eventRanking(e);  break;
+    case Pantalla::CREDITOS:        eventCreditos(e);  break;
     default: break;
     }
 }
@@ -206,6 +207,7 @@ void UIManager::dibujar()
     case Pantalla::SELECCION_MODO:  drawSelModo();   break;
     case Pantalla::SELECCION_NIVEL: drawSelNivel();  break;
     case Pantalla::RANKING:         drawRanking();   break;
+    case Pantalla::CREDITOS:        drawCreditos(); break;
     default: break;
     }
 }
@@ -597,78 +599,49 @@ void UIManager::drawCreditos()
     titulo.setScale(pulso, pulso);
     ventana.draw(titulo);
 
-    // separador
-    sf::RectangleShape sep(sf::Vector2f(480, 2));
-    sep.setOrigin(240, 1); sep.setPosition(cx, cy-205);
-    sep.setFillColor(MORADO);
-    ventana.draw(sep);
-
-    // snake decorativo en ASCII (pequeño)
-    auto snake = makeText("~ ~ ~ ( o v o ) ~ ~ ~", 16,
-                          sf::Color(0, 230, 80, 180), cx, cy-175);
-    ventana.draw(snake);
-
-    // separador 2
-    sf::RectangleShape sep2(sf::Vector2f(380, 1));
-    sep2.setOrigin(190, 0); sep2.setPosition(cx, cy-155);
-    sep2.setFillColor(sf::Color(100, 100, 100, 180));
-    ventana.draw(sep2);
-
-    // --- datos del programador ---
-    // etiqueta + valor en dos columnas centradas
-    struct Campo { std::string etiqueta; std::string valor; sf::Color colorVal; };
-    Campo campos[] = {
-                      { "Desarrollado por:",  "Nadiesdafuentes",             sf::Color(255, 215, 0)   },
-                      { "Numero de cuenta:",  "22111005",                    sf::Color(0, 200, 255)   },
-                      { "Correo:",            "nadiesdafuentes@unitec.edu",  sf::Color(100, 255, 160) },
-                      { "Universidad:",       "UNITEC Honduras",             sf::Color(200, 200, 200) },
-                      { "Asignatura:",        "Laboratorio de Programacion 3 (LCP208)",
-                       sf::Color(200, 200, 200) },
-                      { "Docente:",           "MSc. Idiáquez G.",            sf::Color(200, 200, 200) },
-                      { "Version:",           "1.0  —  2025",               sf::Color(180, 180, 255) },
-                      };
-
-    float yStart = cy - 120.f;
-    float rowH   = 52.f;
-
-    for (int i = 0; i < 7; ++i) {
-        float yn = yStart + i * rowH;
-
-        // fondo alterno sutil
-        if (i % 2 == 0) {
-            sf::RectangleShape fila(sf::Vector2f(560, rowH - 4));
-            fila.setOrigin(280, 0);
-            fila.setPosition(cx, yn - 12);
-            fila.setFillColor(sf::Color(0, 40, 20, 120));
-            ventana.draw(fila);
+    // --- Imagen arriba ---
+    static sf::Texture fotoTex;
+    static bool cargada = false;
+    if (!cargada) {
+        if (fotoTex.loadFromFile("assets/foto3.png")) {
+            cargada = true;
         }
-
-        // etiqueta a la izquierda
-        auto lbl = makeText(campos[i].etiqueta, 14,
-                            sf::Color(160, 220, 160), cx - 260.f, yn, false);
-        ventana.draw(lbl);
-
-        // valor a la derecha con color especial
-        auto val = makeText(campos[i].valor, 15,
-                            campos[i].colorVal, cx + 260.f, yn);
-        // alinear a la derecha manualmente
-        auto bounds = val.getLocalBounds();
-        val.setOrigin(bounds.left + bounds.width, bounds.top + bounds.height/2.f);
-        val.setPosition(cx + 258.f, yn);
-        ventana.draw(val);
     }
+    if (cargada) {
+        sf::Sprite foto(fotoTex);
+        foto.setOrigin(fotoTex.getSize().x/2.f, fotoTex.getSize().y/2.f);
+        foto.setPosition(cx, cy-120); // debajo del título
+        foto.setScale(0.15f, 0.15f);  // tamaño reducido
+        ventana.draw(foto);
+    }
+
+    // --- Información personal debajo de la imagen ---
+    ventana.draw(makeText("Programador", 20, sf::Color(128, 128, 128), cx, cy+20));
+    ventana.draw(makeText("Nadiesda Fuentes", 22, sf::Color(255, 215, 0), cx, cy+50));
+    ventana.draw(makeText("nadfuentes.hdez03@gmail.com", 18, sf::Color(100, 255, 160), cx, cy+80));
+
+    // --- Agradecimiento ---
+    ventana.draw(makeText("Agradecimiento especial al Ing. Idiaquez G.", 18,
+                          sf::Color(200, 200, 200), cx, cy+120));
 
     // separador final
     sf::RectangleShape sep3(sf::Vector2f(480, 1));
-    sep3.setOrigin(240, 0); sep3.setPosition(cx, cy+255);
+    sep3.setOrigin(240, 0); sep3.setPosition(cx, cy+160);
     sep3.setFillColor(sf::Color(100, 100, 100, 180));
     ventana.draw(sep3);
 
     // instruccion para volver
     sf::Uint8 ia = static_cast<sf::Uint8>(100 + 100 * std::sin(tiempo * 3.f));
     ventana.draw(makeText("[ ESC / ENTER ] Volver al menu", 13,
-                          sf::Color(180, 240, 180, ia), cx, cy+280));
+                          sf::Color(180, 240, 180, ia), cx, cy+190));
+
+    // --- BOTÓN REGRESAR (dentro del panel) ---
+    drawBoton("REGRESAR", cx, cy+220, 220, 50, false, sf::Color(200,200,200));
 }
+
+
+
+
 
 void UIManager::eventCreditos(sf::Event& e)
 {
@@ -877,7 +850,6 @@ void UIManager::drawRanking()
     ventana.draw(makeText("HIGH SCORES", 32, sf::Color(255,215,0,ta), cx, cy-272));
 
     // tabs para cambiar entre modos
-    // opcionSel: 0=normal, 1=competitivo
     float tabY = cy - 235.f;
     drawBoton("MODO NORMAL",      cx-130, tabY, 220, 38, opcionSel==0, VERDE);
     drawBoton("MODO COMPETITIVO", cx+140, tabY, 240, 38, opcionSel==1, AMARILLO);
